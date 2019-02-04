@@ -8,13 +8,13 @@ use DB;
 
 class DiagramController extends Controller
 {
-    private $db;
+    private $DBgraph;
 
     public function formulaireDiagram()
     {
-        $this->db = $this->db->connection('BDDgraph');
+        $this->DBgraph = DB::connection('BDDgraph');
 
-        $uneSociete = DB::select(
+        $uneSociete = $this->DBgraph->select(
             'SELECT societe, IDfournisseur, SUM(total_ht_bc) totalHt
             FROM Fournisseur, bon
             WHERE bon.id_fournisseur = fournisseur.IDfournisseur
@@ -27,9 +27,9 @@ class DiagramController extends Controller
 
     public function recoveryDiagram($id)
     {
-        $this->db = DB::connection('BDDgraph');
+        $this->DBgraph = DB::connection('BDDgraph');
 
-        $detailMonthSociety = $this->db->select(
+        $detailMonthSociety = $this->DBgraph->select(
             'SELECT
             SUM(TotalHt) AS totalHt,
             date
