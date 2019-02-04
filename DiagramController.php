@@ -8,9 +8,11 @@ use DB;
 
 class DiagramController extends Controller
 {
+    private $db;
 
     public function formulaireDiagram()
     {
+        $this->db = $this->db->connection('BDDgraph');
 
         $uneSociete = DB::select(
             'SELECT societe, IDfournisseur, SUM(total_ht_bc) totalHt
@@ -25,7 +27,9 @@ class DiagramController extends Controller
 
     public function recoveryDiagram($id)
     {
-        $detailMonthSociety = DB::select(
+        $this->db = DB::connection('BDDgraph');
+
+        $detailMonthSociety = $this->db->select(
             'SELECT
             SUM(TotalHt) AS totalHt,
             date
