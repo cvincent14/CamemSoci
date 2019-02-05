@@ -8,37 +8,20 @@ use DB;
 
 class DiagramController extends Controller
 {
-    private $DBgraph;
+    private $BDDgraph;
 
-    public function formulaireDiagram()
+    public function DiagramTotalHtParSociete($id)
     {
-        $this->DBgraph = DB::connection('BDDgraph');
+        $this->BDDgraph = DB::connection('BDDgraph');
 
-        $uneSociete = $this->DBgraph->select(
-            'SELECT societe, IDfournisseur, SUM(total_ht_bc) totalHt
-            FROM Fournisseur, bon
-            WHERE bon.id_fournisseur = fournisseur.IDfournisseur
-            AND IDfournisseur IN (1)'); //A la place du '1' veulliez rentrer l'ID de la société concerné
-
-        return view('welcome', [
-            'uneSociete' => $uneSociete,
-        ]);
-    }
-
-    public function recoveryDiagram($id)
-    {
-        $this->DBgraph = DB::connection('BDDgraph');
-
-        $detailMonthSociety = $this->DBgraph->select(
+        $detailMonthSociety = $this->BDDgraph->select(
             'SELECT
-            SUM(TotalHt) AS totalHt,
-            date
+            SUM(TotalHt) AS totalHt, date
             FROM (
             SELECT SUM(bon.total_ht_bc) AS TotalHt, LEFT(bon.creation_dateheure,7) AS date 
-            FROM bon, fournisseur
-            WHERE bon.id_fournisseur = fournisseur.IDfournisseur
-            AND(SUBDATE(CURDATE(), INTERVAL 12 MONTH) <= validation_dateheure)
-            AND fournisseur.IDfournisseur = :id
+            FROM bon
+            WHERE(SUBDATE(CURDATE(), INTERVAL 12 MONTH) <= validation_dateheure)
+            AND bon.id_fournisseur = :id
             AND bon.validation_etat>3
             GROUP BY date
             UNION SELECT 0, LEFT(SUBDATE(CURDATE(), INTERVAL 12 MONTH),7)
@@ -56,7 +39,23 @@ class DiagramController extends Controller
             ) AS MAINREQ
             GROUP BY date', ['id' => $id]);
  
-        return ['detailMonthSociety' => $detailMonthSociety];        
+        return ['detailMonthSociety' => $detailMonthSociety];
+    }
+
+    public function DiagramImputation($id)
+    {
+        $this->BDDgraph = DB::connection('BDDgraph');
+
+        $totalImputation = $this->BDDgraph->select(
+            'SELECT SUM(bon.total_ht_bc) AS totalHt, Lib_FR
+            FROM bon, imputation_2
+            WHERE bon.id_imp2 = imputation_2.IDImputation_2
+            AND(SUBDATE(CURDATE(), INTERVAL 12 MONTH) <= validation_dateheure)
+            AND bon.id_fournisseur = :id
+            AND bon.validation_etat > 3
+			GROUP BY IDImputation_2', ['id' => $id]);
+ 
+        return ['totalImputation' => $totalImputation];
     }
 
 }

@@ -1,7 +1,7 @@
 <template>
-    <div class="col border-right">  
-        <h3 class="text-center">Graphe sur les dépenses des 12 derniers mois de la société {{ supplierName }}</h3>         
-        <canvas id="GraphCircDepenseMoisSociete" width="50" height="25"></canvas>     
+    <div class="col border-left">  
+        <h3 class="text-center">Graphe du revenu des imputations sur les 12 derniers mois de la société {{ supplierName }}</h3>            
+        <canvas id="GraphImputation" width="30" height="15"></canvas>    
     </div>
 
 </template>
@@ -13,31 +13,31 @@
         data(){
             return{
                 infos : [],
-                date: [],
+                libelle: [],
                 totalHt : [],
             }
         },  
         mounted: function () {
             this.$nextTick(function () {
-                axios.get('/DiagramTotalHtParSociete/' + this.supplierId)
+                axios.get('/DiagramImputation/' + this.supplierId)
                 .then( response => {
-                    this.infos = response.data.detailMonthSociety
+                    this.infos = response.data.totalImputation
                     console.log("Success recup info")             
                 })
                 .then( () => {
                     
                     Object.entries(this.infos).forEach(([cle, info]) => {
-                        this.date.push(info.date)
+                        this.libelle.push(info.Lib_FR)
                         this.totalHt.push(info.totalHt)
                     })
                     console.log("Success boucle") 
                 }) 
                 .then( () => { 
-                    var ctx = document.getElementById('GraphCircDepenseMoisSociete');
+                    var ctx = document.getElementById('GraphImputation');
                     var GraphCircDepenseMoisSociete = new Chart(ctx, {
-                        type: 'bar',
+                        type: 'doughnut',
                         data: {
-                            labels:  this.date ,
+                            labels:  this.libelle ,
                             datasets: [{
                                 borderWidth : 0.5,
                                 backgroundColor: tableColor,
@@ -54,7 +54,7 @@
                         }
                     });
                     this.infos = []
-                    this.date= []
+                    this.libelle= []
                     this.totalHt = []
                     console.log("Success Graph")
                 })    
