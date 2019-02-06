@@ -1,7 +1,9 @@
 <template>
-    <div class="col border-left">  
-        <h3 class="text-center">Graphe du revenu des imputations sur les 12 derniers mois de la société {{ supplierName }}</h3>            
-        <canvas id="GraphImputation" width="30" height="15"></canvas>    
+    <div class="col">  
+        <div class="card">
+            <div class="trebuchet card-header">Revenu des imputations des 12 derniers mois de {{ supplierName }}</div>            
+            <canvas id="GraphImputation" width="50" height="30" class="p-2"></canvas>   
+        </div> 
     </div>
 
 </template>
@@ -41,7 +43,7 @@
                             datasets: [{
                                 borderWidth : 0.5,
                                 backgroundColor: tableColor,
-                                borderColor: 'rgb(0, 0, 0)',
+                                borderColor: 'rgb(200, 206, 211)',
                                 data: this.totalHt,
                             }]
                         },
